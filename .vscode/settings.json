@@ -1,0 +1,6 @@
+{
+    "python.pythonPath": "/home/amin/programming/forex-indicators/.env/bin/python3.7",
+    "python.linting.pylintEnabled": true,
+    "python.linting.enabled": true,
+    "python.linting.flake8Enabled": false
+}
