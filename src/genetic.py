@@ -73,14 +73,12 @@ class BacktestingGeneticAlgorithm(object):
         new_population = c.count()
         # print("Max fitness:", self.max_fitness)
         for ind in new_population:
-            # delete_probability for positive max_fitness =  5*occurrence/population_len + 1-fitness/max(fitness)
-            # delete_probability for negative max_fitness =  5*occurrence/population_len + 1+fitness/max(fitness)
-            max_fitness = self.max_fitness * -1
-            ind.survive_probability = 5*ind.duplicate_number/len(new_population) + 1 + ind.fitness/max_fitness
+            # delete_probability for positive max_fitness =  occurrence/population_len + 1-fitness/max(fitness)
+            # delete_probability for negative max_fitness =  occurrence/population_len + 1+fitness/max(fitness)
+            # max_fitness = self.max_fitness * -1
+            ind.delete_probability = ind.duplicate_number/len(new_population) - ind.fitness
 
-        new_population = sorted(new_population, key=lambda x: x.survive_probability, reverse=True)
-        # for p in new_population:
-            # print(p.fitness, p.duplicate_number, p.survive_probability)
+        new_population = sorted(new_population, key=lambda x: x.delete_probability)
         self._population = new_population[:self._population_size]
 
     def register(self, obj):

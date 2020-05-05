@@ -26,7 +26,7 @@ class BaseIndividual(BaseGaIndividualInterface):
         self.result = None
         self._fitness = None
         self.duplicate_number = 1
-        self.survive_probability = None
+        self.delete_probability = None
 
     def xover(self):
         """Use + operator to xover two individuals"""
