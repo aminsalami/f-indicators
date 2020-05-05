@@ -26,11 +26,11 @@ class SMAParameter(object):
         tmp = random.randint(0, 100)
 
         if(tmp < 22.5):
-            self.A = random.randint(1, self.B)
+            self.A = random.randint(2, self.B)
         elif(tmp < 45):
             self.B = random.randint(self.A, 200)
         elif(tmp < 68):
-            self.C = random.randint(1, self.D)
+            self.C = random.randint(2, self.D)
         elif(tmp < 90):
             self.D = random.randint(self.C, 200)
         elif(tmp < 100):
