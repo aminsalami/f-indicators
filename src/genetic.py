@@ -2,6 +2,7 @@
 
 import random
 import time
+import threading
 from collections import Counter
 from individual import BaseIndividual
 from utils import DuplicateCounter
@@ -24,13 +25,10 @@ class BacktestingGeneticAlgorithm(object):
         self._population = []
         self.max_fitness = -70
 
-    def _new_population(self) -> list:
-        """
-        TODO
-            Create populations in a concurrent way and force
-            the fitness value to be calculated
-        """
-        for _ in range(self._population_size):
+    def _new_population(self, size=None) -> list:
+        if not size:
+            size = self._population_size
+        for _ in range(size):
             self._add_individual()
 
     def _add_individual(self):
@@ -88,8 +86,17 @@ class BacktestingGeneticAlgorithm(object):
         self._indicator_classes.append(obj)
 
     def run(self):
-        self._new_population()
+        thread_size = 4
+        threads = []
+        for _ in range(thread_size):  # TODO Make thread size dynamic
+            threads.append(threading.Thread(target=self._new_population, args=(int(self._population_size/thread_size), )))
+        for t in threads:
+            t.start()
+        for t in threads:
+            t.join()
+
         print("\n==Population created successfully!==\n")
+
         for _ in range(self._generations):
             # Add random individual
             self._add_jesus()

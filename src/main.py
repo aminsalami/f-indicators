@@ -21,7 +21,8 @@ if __name__ == "__main__":
     data_slice = data.loc["2013":"2020"]
 
     # b = BacktestingGeneticAlgorithm(data_slice, 100, 10, 10, 10)
-    b = BacktestingGeneticAlgorithm(data_slice, 120, 100, 50, 20)
+    # b = BacktestingGeneticAlgorithm(data_slice, 120, 100, 50, 20)
+    b = BacktestingGeneticAlgorithm(data_slice, 10, 1, 1, 1)
 
     b.register(SMAIndicator)
     b.register(RSIIndicator)
