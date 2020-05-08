@@ -88,9 +88,8 @@ class BacktestingGeneticAlgorithm(object):
         self._indicator_classes.append(obj)
 
     def run(self):
-        thread_size = 4
         threads = []
-        for _ in range(thread_size):  # TODO Make thread size dynamic
+        for _ in range(self._thread_size):  # TODO Make thread size dynamic
             threads.append(threading.Thread(target=self._new_population, args=(int(self._population_size/self._thread_size), )))
         for t in threads:
             t.start()
