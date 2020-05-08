@@ -13,7 +13,9 @@ class BacktestingGeneticAlgorithm(object):
     TODO Pass individual parameters as a TradeConfigObject
     """
 
-    def __init__(self, data, population_size=100, generations=100, number_of_xover=50, number_of_jesus=30, mutation_probability=0.1):
+    def __init__(self, data, population_size=100, generations=100, number_of_xover=50,
+        number_of_jesus=30, mutation_probability=0.1, thread_size=4):
+        self._thread_size = thread_size
         self._data = data
         self._population_size = population_size
         self._generations = generations
@@ -89,7 +91,7 @@ class BacktestingGeneticAlgorithm(object):
         thread_size = 4
         threads = []
         for _ in range(thread_size):  # TODO Make thread size dynamic
-            threads.append(threading.Thread(target=self._new_population, args=(int(self._population_size/thread_size), )))
+            threads.append(threading.Thread(target=self._new_population, args=(int(self._population_size/self._thread_size), )))
         for t in threads:
             t.start()
         for t in threads:

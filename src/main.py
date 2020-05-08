@@ -22,7 +22,7 @@ if __name__ == "__main__":
 
     # b = BacktestingGeneticAlgorithm(data_slice, 100, 10, 10, 10)
     # b = BacktestingGeneticAlgorithm(data_slice, 120, 100, 50, 20)
-    b = BacktestingGeneticAlgorithm(data_slice, 10, 1, 1, 1)
+    b = BacktestingGeneticAlgorithm(data_slice, 10, 1, 1, 1, thread_size=4)
 
     b.register(SMAIndicator)
     b.register(RSIIndicator)
