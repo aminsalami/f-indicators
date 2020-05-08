@@ -15,7 +15,7 @@ class BaseIndividual(BaseGaIndividualInterface):
     """
     def __init__(self, data, cash=10000, commission=0.0002, *args, **kwargs):
         self.original_data = data
-        tmp = random.randint(0, len(timeframes))
+        tmp = random.randint(0, len(timeframes)-1)
         self.timeframe = timeframes[tmp]
         self.sample_data = data[tmp]
         self.commission = commission

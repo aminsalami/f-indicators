@@ -68,15 +68,12 @@ class BacktestingGeneticAlgorithm(object):
             ind.mutate()
 
     def _do_survive(self):
-        print('Number of population:', len(self._population))
         c = DuplicateCounter()
-        # to_be_distinct = set()
         for ind in self._population:
             params = ind.get_params()
             c[params] = ind
 
         new_population = c.count()
-        # print("Max fitness:", self.max_fitness)
         for ind in new_population:
             # Old delete_probability for positive max_fitness =  occurrence/population_len + 1-fitness/max(fitness)
             # t = ind.result.get("Avg. Trade Duration") # Average Trade Duration
@@ -114,6 +111,8 @@ class BacktestingGeneticAlgorithm(object):
                 self._do_xover()
 
             self._do_survive()
+
+            print("Fitness, TimeFrame: (%s, %s)" % (self._population[0].fitness, self._population[0].timeframe))
 
         print('[+] Number of population:', len(self._population))
         print("\n\n", self._population[0].result)
