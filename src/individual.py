@@ -7,6 +7,7 @@ from base import BaseGaIndividualInterface, BaseStrategy
 from indicators.sma import SMAIndicator
 from utils import TFConvertor
 # ----------------------------------------------------------------------------
+timeframes = ['5T', '10T', '20T', '30T', '1H', '2H', '3H', '4H']
 
 
 class BaseIndividual(BaseGaIndividualInterface):
@@ -14,7 +15,9 @@ class BaseIndividual(BaseGaIndividualInterface):
     """
     def __init__(self, data, cash=10000, commission=0.0002, *args, **kwargs):
         self.original_data = data
-        self.sample_data = random.choice(data)
+        tmp = random.randint(0, len(timeframes))
+        self.timeframe = timeframes[tmp]
+        self.sample_data = data[tmp]
         self.commission = commission
         self.cash = cash
 

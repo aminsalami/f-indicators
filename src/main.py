@@ -22,10 +22,11 @@ if __name__ == "__main__":
     data_slice = data.loc["2013":"2020"]
 
     timeframes = ['5T', '10T', '20T', '30T', '1H', '2H', '3H', '4H']
+    print("[+] Prepairing time frames...")
     timeframed_data = CreateTimeFrames(data_slice, timeframes)
 
     # b = BacktestingGeneticAlgorithm(timeframed_data, 120, 100, 50, 20)
-    b = BacktestingGeneticAlgorithm(timeframed_data, 30, 10, 10, 1, thread_size=4)
+    b = BacktestingGeneticAlgorithm(timeframed_data, 10, 5, 5, 1, thread_size=4)
 
     b.register(SMAIndicator)
     b.register(RSIIndicator)

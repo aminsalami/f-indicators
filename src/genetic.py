@@ -26,8 +26,8 @@ class BacktestingGeneticAlgorithm(object):
         self._indicator_classes = []
         self._population = []
 
-    def _new_population(self, size=None) -> list:
-        if not size:
+    def _new_population(self, size=None):
+        if size is None:
             size = self._population_size
         for _ in range(size):
             self._add_individual()
@@ -43,8 +43,15 @@ class BacktestingGeneticAlgorithm(object):
         self._population.append(ind)
 
     def _add_jesus(self):
-        for _ in range(self._number_of_jesus):
-            self._add_individual()
+        threads = []
+        size = self._number_of_jesus//self._thread_size
+        for _ in range(self._thread_size - 1):
+            threads.append(threading.Thread(target=self._new_population, args=(size, )))
+        threads.append(threading.Thread(target=self._new_population, args=(size + self._number_of_jesus % self._thread_size, )))
+        for t in threads:
+            t.start()
+        for t in threads:
+            t.join()
 
     def _do_xover(self):
         # select two individual
@@ -87,14 +94,16 @@ class BacktestingGeneticAlgorithm(object):
 
     def run(self):
         threads = []
-        for _ in range(self._thread_size):  # TODO Make thread size dynamic
-            threads.append(threading.Thread(target=self._new_population, args=(int(self._population_size/self._thread_size), )))
+        size = self._population_size // self._thread_size
+        for _ in range(self._thread_size - 1):
+            threads.append(threading.Thread(target=self._new_population, args=(size, )))
+        threads.append(threading.Thread(target=self._new_population, args=(size + self._population_size % self._thread_size, )))
         for t in threads:
             t.start()
         for t in threads:
             t.join()
 
-        print("\n==Population created successfully!==\n")
+        print("\n[+] Population created successfully!\n")
 
         for _ in range(self._generations):
             # Add random individual
@@ -105,7 +114,7 @@ class BacktestingGeneticAlgorithm(object):
 
             self._do_survive()
 
-        print('Number of population:', len(self._population))
+        print('[+] Number of population:', len(self._population))
         print("\n\n", self._population[0].result)
         print("\n\n", self._population[0].get_params())
         print("\nDone GA :)\n")
