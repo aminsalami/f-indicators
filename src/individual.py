@@ -63,7 +63,7 @@ class BaseIndividual(BaseGaIndividualInterface):
                 new_params.append(p2.xover(p1))
 
         # print("NEW PARAMETER OF child:", new_params)
-        ind.strategy_cls = ind._build_strategy(new_params)
+        ind.strategy_cls = ind._build_strategy(new_params.reverse())
         ind.sample_data = random.choice([obj.sample_data, self.sample_data])
         # Recalculate the fitness
         ind.fitness
@@ -118,7 +118,7 @@ class BaseIndividual(BaseGaIndividualInterface):
             methods['init__' + name] = klass.__dict__.get('init')
             methods['next__' + name] = klass.__dict__.get('next')
             if parameters:
-                methods['params_' + name] = parameters.pop()
+                methods['params_' + name] = parameters.pop(0)
             else:
                 p = klass.__dict__.get('params')
                 methods['params_' + name] = p()
