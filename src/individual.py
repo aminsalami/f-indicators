@@ -12,16 +12,14 @@ from utils import TFConvertor
 class BaseIndividual(BaseGaIndividualInterface):
     """
     """
-    def __init__(self, data, cash=10000, commission=0.02, *args, **kwargs):
-        self.data = data
+    def __init__(self, data, cash=10000, commission=0.0002, *args, **kwargs):
+        self.original_data = data
+        self.sample_data = random.choice(data)
         self.commission = commission
         self.cash = cash
 
         self._indicators_class = []
         self.strategy_cls = None
-
-        timeframe_list = ['5T', '10T', '20T', '30T', '1H', '2H', '3H', '4H']
-        self.timeframe = random.choice(timeframe_list)
 
         self.result = None
         self._fitness = None
@@ -48,7 +46,7 @@ class BaseIndividual(BaseGaIndividualInterface):
                 ind2_params.append(getattr(obj.strategy_cls, p))
 
         # Create a new child and populate its value
-        ind = BaseIndividual(self.data, self.cash, self.commission)
+        ind = BaseIndividual(self.original_data, self.cash, self.commission)
         for k in self._indicators_class:
             ind.register(k)
 
@@ -63,7 +61,9 @@ class BaseIndividual(BaseGaIndividualInterface):
 
         # print("NEW PARAMETER OF child:", new_params)
         ind.strategy_cls = ind._build_strategy(new_params)
-        ind.timeframe = random.choice([obj.timeframe, self.timeframe])
+        ind.sample_data = random.choice([obj.sample_data, self.sample_data])
+        # Recalculate the fitness
+        ind.fitness
         return ind
 
     def mutate(self):
@@ -71,6 +71,8 @@ class BaseIndividual(BaseGaIndividualInterface):
             if p.startswith('params_'):
                 p = getattr(self.strategy_cls, p)
                 p.mutate()
+        # Recalculate the fitness
+        self._calculate_fitness()
 
     def get_params(self):
         params = []
@@ -89,9 +91,7 @@ class BaseIndividual(BaseGaIndividualInterface):
         """
         Calculate fitness for each one of the strategies and return the result.
         """
-        # TODO Fix the GeneralParameter
-        tmp_data = TFConvertor(self.data, self.timeframe)
-        bt = Backtest(tmp_data, self.strategy_cls, cash=self.cash, commission=self.commission)
+        bt = Backtest(self.sample_data, self.strategy_cls, cash=self.cash, commission=self.commission)
         result = bt.run()
         self.result = result
         # print(result, "\n")
@@ -131,13 +131,3 @@ class BaseIndividual(BaseGaIndividualInterface):
         TODO Maybe its a good solution to bound single functions to strategy_cls
         """
         self.strategy_cls = self._build_strategy(parameters=None)
-# ----------------------------------------------------------------------------
-
-class GeneralParameter(object):
-    timeframe_list = ['10T', '20T', '30T', '1H', '2H',
-                      '3H', '4H', '6H', '8H', '12H', '1D']
-    timeframe = random.choice(timeframe_list)
-    def xover(self, obj):
-        p = GeneralParameter()
-        p.timeframe = random.choice(self.timeframe_list)
-        return p

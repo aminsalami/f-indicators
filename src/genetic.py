@@ -25,7 +25,6 @@ class BacktestingGeneticAlgorithm(object):
 
         self._indicator_classes = []
         self._population = []
-        self.max_fitness = -70
 
     def _new_population(self, size=None) -> list:
         if not size:
@@ -40,8 +39,7 @@ class BacktestingGeneticAlgorithm(object):
         # Build strategy based on registered indicators
         ind.build_strategy()
         # print("[+] Fitness:", ind.fitness)
-        if self.max_fitness < ind.fitness:
-            self.max_fitness = ind.fitness
+        ind.fitness # Force fitness to be calculated
         self._population.append(ind)
 
     def _add_jesus(self):
@@ -51,8 +49,8 @@ class BacktestingGeneticAlgorithm(object):
     def _do_xover(self):
         # select two individual
         ind1, ind2 = random.sample(self._population, 2)
-        new_ind = ind1 + ind2
-        new_ind.data = self._data   # xover two individuals
+        new_ind = ind1 + ind2   # xover two individuals
+        new_ind.data = self._data
 
         self._do_mutate(new_ind)
 
@@ -73,10 +71,10 @@ class BacktestingGeneticAlgorithm(object):
         new_population = c.count()
         # print("Max fitness:", self.max_fitness)
         for ind in new_population:
-            # delete_probability for positive max_fitness =  occurrence/population_len + 1-fitness/max(fitness)
-            # delete_probability for negative max_fitness =  occurrence/population_len + 1+fitness/max(fitness)
-            # max_fitness = self.max_fitness * -1
-            ind.delete_probability = ind.duplicate_number/len(new_population) - ind.fitness
+            # Old delete_probability for positive max_fitness =  occurrence/population_len + 1-fitness/max(fitness)
+            t = ind.result.get("Avg. Trade Duration") # Average Trade Duration
+            tph = t.total_seconds() / 3600  # Average Trade Duration per Hour
+            ind.delete_probability = 5*ind.duplicate_number/len(new_population) - ind.fitness/tph
 
         new_population = sorted(new_population, key=lambda x: x.delete_probability)
         self._population = new_population[:self._population_size]
@@ -108,7 +106,6 @@ class BacktestingGeneticAlgorithm(object):
             self._do_survive()
 
         print('Number of population:', len(self._population))
-        print("\nFITNESS MAX:", self.max_fitness)
         print("\n\n", self._population[0].result)
         print("\n\n", self._population[0].get_params())
-        print("Done GA :)\n")
+        print("\nDone GA :)\n")

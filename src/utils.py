@@ -38,6 +38,12 @@ def TFConvertor(data, newtf):
 
     return newtfdata
 
+def CreateTimeFrames(data, timeframes):
+    new_data = []
+    for t in timeframes:
+        new_data.append(TFConvertor(data, t))
+    return new_data
+
 
 class DuplicateCounter(MutableMapping):
     def __init__(self, *args, **kwargs):
