@@ -79,9 +79,10 @@ class BacktestingGeneticAlgorithm(object):
         # print("Max fitness:", self.max_fitness)
         for ind in new_population:
             # Old delete_probability for positive max_fitness =  occurrence/population_len + 1-fitness/max(fitness)
-            t = ind.result.get("Avg. Trade Duration") # Average Trade Duration
-            tph = t.total_seconds() / 3600  # Average Trade Duration per Hour
-            ind.delete_probability = 5*ind.duplicate_number/len(new_population) - ind.fitness/tph
+            # t = ind.result.get("Avg. Trade Duration") # Average Trade Duration
+            # tph = t.total_seconds() / 3600  # Average Trade Duration per Hour
+            # ind.delete_probability = 5*ind.duplicate_number/len(new_population) - ind.fitness/tph
+            ind.delete_probability = 2*ind.duplicate_number/len(new_population) - ind.fitness
 
         new_population = sorted(new_population, key=lambda x: x.delete_probability)
         self._population = new_population[:self._population_size]
