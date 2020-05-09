@@ -31,7 +31,7 @@ class RSIParameter(object):
             p.price = self.price
 
         else:
-            p.bottom = self.bottom + random.indint(-4, 4)
+            p.bottom = self.bottom + random.randint(-4, 4)
             p.top = self.top + random.randint(-4, 4)
             p.period_A = random.randint(min(self.period_A, obj.period_A), max(self.period_A, obj.period_A))
             p.price = random.choice(["Open", "Close", "Low", "High"])
