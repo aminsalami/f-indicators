@@ -4,6 +4,8 @@ from pathlib import Path, PurePosixPath
 from genetic import BacktestingGeneticAlgorithm
 from indicators.sma import SMAIndicator
 from indicators.rsi import RSIIndicator
+from indicators.macd import MACDIndicator
+from indicators.adx import ADXIndicator
 from utils import CreateTimeFrames
 
 log = logging.getLogger("GA")
@@ -26,9 +28,11 @@ if __name__ == "__main__":
     timeframed_data = CreateTimeFrames(data_slice, timeframes)
 
     # b = BacktestingGeneticAlgorithm(timeframed_data, 120, 100, 50, 20)
-    b = BacktestingGeneticAlgorithm(timeframed_data, 10, 10, 5, 1, thread_size=2)
+    b = BacktestingGeneticAlgorithm(timeframed_data, 30, 10, 5, 1, thread_size=2)
 
-    b.register(SMAIndicator)
-    b.register(RSIIndicator)
+    # b.register(RSIIndicator)
+    # b.register(SMAIndicator)
+    b.register(MACDIndicator)
+    b.register(ADXIndicator)
 
     b.run()

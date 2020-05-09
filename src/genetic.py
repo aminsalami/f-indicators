@@ -76,10 +76,10 @@ class BacktestingGeneticAlgorithm(object):
         new_population = c.count()
         for ind in new_population:
             # Old delete_probability for positive max_fitness =  occurrence/population_len + 1-fitness/max(fitness)
-            # t = ind.result.get("Avg. Trade Duration") # Average Trade Duration
-            # tph = t.total_seconds() / 3600  # Average Trade Duration per Hour
-            # ind.delete_probability = 5*ind.duplicate_number/len(new_population) - ind.fitness/tph
-            ind.delete_probability = 2*ind.duplicate_number/len(new_population) - ind.fitness
+            t = ind.result.get("Avg. Trade Duration") # Average Trade Duration
+            atd = t.total_seconds() / 3600  # Average Trade Duration in Hour
+            ind.delete_probability = 5*ind.duplicate_number/len(new_population) - ind.fitness/atd
+            # ind.delete_probability = 2*ind.duplicate_number/len(new_population) - ind.fitness
 
         new_population = sorted(new_population, key=lambda x: x.delete_probability)
         self._population = new_population[:self._population_size]
@@ -109,10 +109,13 @@ class BacktestingGeneticAlgorithm(object):
             # random Xover
             for _ in range(self._number_of_xover):
                 self._do_xover()
-
+            # xover
             self._do_survive()
 
-            print("Fitness, TimeFrame: (%s, %s)" % (self._population[0].fitness, self._population[0].timeframe))
+            p0 = self._population[0]
+            print("Fitness, TimeFrame, Trades#, AvgDuration: (%s, %s, %s, %s)" % \
+                (p0.fitness, p0.timeframe, p0.result.get("# Trades"), p0.result.get("Avg. Trade Duration"))
+                )
 
         print('[+] Number of population:', len(self._population))
         print("\n\n", self._population[0].result)
