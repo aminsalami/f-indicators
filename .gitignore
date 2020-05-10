@@ -1,5 +1,6 @@
 # Me
 data_large/
+logs/
 
 # ----------------------------------------------------------------------------
 
@@ -151,3 +152,4 @@ venv.bak/
 pip-selfcheck.json
 
 # End of https://www.gitignore.io/api/virtualenv
+
