@@ -7,7 +7,7 @@ class RSIParameter(object):
     def __init__(self):
         self.bottom = random.randint(1, 50)
         self.top = random.randint(50, 100)
-        self.period_A = random.randint(2, 30)
+        self.period_A = random.randint(5, 100)
         self.price = random.choice(["Open", "Close", "Low", "High"])
 
     def xover(self, obj):
@@ -23,21 +23,24 @@ class RSIParameter(object):
             p.top = obj.top if obj.top > self.bottom else random.randint(min(self.bottom, 50), self.top)
             p.period_A = self.period_A
             p.price = obj.price
+            p.bottom, p.top = self.check_distance(p.bottom, p.top, 10)
 
         elif tmp < 60:
             p.bottom = obj.bottom
             p.top = self.top if self.top > obj.bottom else random.randint(max(self.top, 50), 100)
             p.period_A = obj.period_A
             p.price = self.price
+            p.bottom, p.top = self.check_distance(p.bottom, p.top, 10)
 
         else:
-            p.bottom = self.bottom + random.randint(-4, 4)
-            p.top = self.top + random.randint(-4, 4)
+            p.bottom = self.bottom + random.randint(-3, 3)
+            p.top = self.top + random.randint(-3, 3)
             p.period_A = random.randint(min(self.period_A, obj.period_A), max(self.period_A, obj.period_A))
-            p.price = random.choice(["Open", "Close", "Low", "High"])
+            p.price = self.price
 
             if p.top <= p.bottom:
                 p.top = random.randint(p.bottom, 100)
+            p.bottom, p.top = self.check_distance(p.bottom, p.top, 10)
 
         return p
 
@@ -47,9 +50,19 @@ class RSIParameter(object):
         if self.top <= self.bottom:
             self.top = random.randint(self.bottom, 100)
         self.period_A = random.randint(10, 20)
+        self.bottom, self.top = self.check_distance(self.bottom, self.top, 10)
+        self.price = random.choice(["Open", "Close", "Low", "High"])
 
     def get_params(self):
         return (self.bottom, self.top, self.period_A)
+
+    def check_distance(self, bottom, top, min_distance=10):
+        while top - bottom < min_distance:
+            top += 1
+            bottom -= 1
+        if bottom <= 0:
+            return 0, min_distance
+        return bottom, top
 
 
 class RSIIndicator(BaseStrategy):

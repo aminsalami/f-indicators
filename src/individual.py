@@ -1,13 +1,19 @@
 # Implements 'Individual GA' class
-
+import logging
+from datetime import datetime
 import random
 import numpy as np
+from pathlib import Path
 from backtesting import Strategy, Backtest
 from base import BaseGaIndividualInterface, BaseStrategy
 from indicators.sma import SMAIndicator
 from utils import TFConvertor
 # ----------------------------------------------------------------------------
-timeframes = ['5T', '10T', '20T', '30T', '1H', '2H', '3H', '4H']
+log = logging.getLogger("Individual")
+log.setLevel(logging.DEBUG)
+path = Path(__file__).parent.resolve().parent
+path = path.joinpath("logs/ga__%s.log" % datetime.now().strftime('%Y-%m-%d--%H:%M:%S'))
+log.addHandler(logging.FileHandler(path.resolve()))
 
 
 class BaseIndividual(BaseGaIndividualInterface):
@@ -15,9 +21,8 @@ class BaseIndividual(BaseGaIndividualInterface):
     """
     def __init__(self, data, cash=10000, commission=0.0002, *args, **kwargs):
         self.original_data = data
-        tmp = random.randint(0, len(timeframes)-1)
-        self.timeframe = timeframes[tmp]
-        self.sample_data = data[tmp]
+        self.timeframe = random.choice(list(data.keys()))
+        self.sample_data = data[self.timeframe]
         self.commission = commission
         self.cash = cash
 
@@ -62,11 +67,11 @@ class BaseIndividual(BaseGaIndividualInterface):
             else:
                 new_params.append(p2.xover(p1))
 
-        # print("NEW PARAMETER OF child:", new_params)
         ind.strategy_cls = ind._build_strategy(new_params.reverse())
         ind.sample_data = random.choice([obj.sample_data, self.sample_data])
         # Recalculate the fitness
         ind.fitness
+        log.debug("XOver (%s, %s) --> %s" % (self.fitness, obj.fitness, ind.fitness))
         return ind
 
     def mutate(self):
@@ -97,7 +102,6 @@ class BaseIndividual(BaseGaIndividualInterface):
         bt = Backtest(self.sample_data, self.strategy_cls, cash=self.cash, commission=self.commission)
         result = bt.run()
         self.result = result
-        # print(result, "\n")
         if np.isnan(result.SQN):
             sqn = -70.0
         else:

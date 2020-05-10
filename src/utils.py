@@ -39,9 +39,9 @@ def TFConvertor(data, newtf):
     return newtfdata
 
 def CreateTimeFrames(data, timeframes):
-    new_data = []
+    new_data = {}
     for t in timeframes:
-        new_data.append(TFConvertor(data, t))
+        new_data[t] = TFConvertor(data, t)
     return new_data
 
 
