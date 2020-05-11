@@ -1,6 +1,4 @@
-import logging
 import pandas as pd
-from pathlib import Path, PurePosixPath
 from genetic import BacktestingGeneticAlgorithm
 from indicators.sma import SMAIndicator
 from indicators.rsi import RSIIndicator
@@ -8,11 +6,6 @@ from indicators.macd import MACDIndicator
 from indicators.adx import ADXIndicator
 from utils import CreateTimeFrames
 
-log = logging.getLogger("GA")
-log.setLevel(logging.DEBUG)
-path = Path(__file__).parent.resolve().parent
-path = path.joinpath("logs/ga.log")
-log.addHandler(logging.FileHandler(path.resolve()))
 
 if __name__ == "__main__":
     # log.info("Starting")
@@ -21,16 +14,24 @@ if __name__ == "__main__":
     # set datetime as index
     data = data.set_index('Datetime')
 
-    data_slice = data.loc["2013":"2020"]
+    data_slice = data.loc["2019":"2020"]
 
-    timeframes = ['5T', '10T', '20T', '30T', '1H', '2H', '3H', '4H']
+    # timeframes = ['5T', '10T', '20T', '30T', '1H', '2H', '3H', '4H']
+    timeframes = ['1T', '3T', '5T', '30T']
     print("[+] Prepairing time frames...")
     timeframed_data = CreateTimeFrames(data_slice, timeframes)
 
     # b = BacktestingGeneticAlgorithm(timeframed_data, 120, 100, 50, 20)
-    b = BacktestingGeneticAlgorithm(timeframed_data, 30, 10, 5, 1, thread_size=2)
+    b = BacktestingGeneticAlgorithm(
+        timeframed_data,
+        population_size=65,
+        generations=20,
+        number_of_xover=30,
+        number_of_jesus=20,
+        thread_size=8
+    )
 
-    # b.register(RSIIndicator)
+    b.register(RSIIndicator)
     # b.register(SMAIndicator)
     b.register(MACDIndicator)
     b.register(ADXIndicator)
