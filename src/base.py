@@ -37,14 +37,14 @@ class BaseStrategy(Strategy):
         Buy if sum of transactions is greater than zero.
         """
         buy_or_not = 0
-
         for method in dir(self):
             if method.startswith("next__"):
                 next_ = getattr(self, method)
                 buy_or_not += next_()
-
-        if buy_or_not > 0:
+                if buy_or_not == 0:
+                    return
+        if buy_or_not == 2:
             self.buy()
-        elif buy_or_not < 0:
+        elif buy_or_not < -2:
             self.sell()
 # ----------------------------------------------------------------------------

@@ -14,9 +14,9 @@ class MACDParameter(object):
     MACD Histogram: MACD Line – Signal Line
     """
     def __init__(self):
-        self.bottom = random.randint(2, 10)             # fast_period
-        self.top = random.randint(self.bottom, 30)      # slow_period
-        self.period = random.randint(1, 10)             # signal_period
+        self.bottom = random.randint(4, 10)             # fast_period
+        self.top = random.randint(self.bottom, 20)      # slow_period
+        self.period = 9
 
     def xover(self, obj):
         """
@@ -28,31 +28,27 @@ class MACDParameter(object):
         tmp = random.randint(1, 100)
         if tmp < 30:
             p.bottom = self.bottom
-            p.top = obj.top if obj.top > self.bottom else random.randint(min(self.bottom, 30), self.top)
+            p.top = obj.top if obj.top > self.bottom else random.randint(min(self.bottom, 20), self.top)
             p.period = self.period
 
         elif tmp < 60:
             p.bottom = obj.bottom
-            p.top = self.top if self.top > obj.bottom else random.randint(p.bottom, 30)
+            p.top = self.top if self.top > obj.bottom else random.randint(p.bottom, 20)
             p.period = obj.period
 
         else:
-            p.bottom = self.bottom + random.randint(-2, 2)
+            p.bottom = self.bottom + random.randint(-1, 1)
             if p.bottom < 2:
                 p.bottom = 2
-            p.top = self.top + random.randint(-2, 2)
+            p.top = self.top + random.randint(-1, 1)
             p.period = random.randint(min(self.period, obj.period), max(self.period, obj.period))
             if p.top <= p.bottom:
-                p.top = random.randint(p.bottom, 30)
+                p.top = random.randint(p.bottom, 20)
 
         return p
 
     def mutate(self):
-        self.bottom = random.randint(2, 9)
-        self.top = self.top + random.randint(-3, 3)
-        if self.top <= self.bottom:
-            self.top = random.randint(self.bottom, 30)
-        self.period = random.randint(2, 8)
+        return
 
     def get_params(self):
         # (fast_period, slow_period, signal_period)
@@ -67,11 +63,11 @@ class MACDIndicator(BaseStrategy):
     params = MACDParameter
 
     def next(self) -> int:
-        if not self.bought and self.macd[-1] < -0.0002 and self.macd[-1] > self.macd[-2] and self.macd[-1] > self.macd[-3]:
+        if not self.bought and self.macd[-1] < -0.00013:
             # Buy
             self.bought = not self.bought
             return 1
-        elif self.bought and self.macd[-1] < 0.0001 and self.macd[-2] > 0.0001 and self.macd[-2] < self.macd[-3]:
+        elif self.bought and self.macd[-1] < 0.00013 and self.macd[-2] > 0.00013:
             # Sell
             self.bought = not self.bought
             return -1

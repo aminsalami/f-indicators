@@ -2,7 +2,7 @@ import logging
 import pandas as pd
 import numpy as np
 from backtesting import Strategy, Backtest
-from talib import RSI
+from talib import RSI, MACD
 from backtesting.lib import crossover
 from pathlib import Path, PurePosixPath
 
@@ -21,7 +21,7 @@ data['Datetime'] = pd.to_datetime(data['Datetime'], format="%d.%m.%Y %H:%M:%S")
 data = data.set_index('Datetime')
 
 data_loc = data.loc["2017":"2020"]
-datatmp = TFConvertor(data_loc, '1H')   # It is different for every new individual
+datatmp = TFConvertor(data_loc, '1T')   # It is different for every new individual
 
 buy_, sell_ = 0, 0
 
@@ -49,11 +49,27 @@ class RSIIndicator(Strategy):
             self.sell()
 
 
+class MACDI(Strategy):
+    f = 5
+    s = 17
+    p = 2
+    bought = False
+    def init(self):
+        self.macd = self.I(MACD, self.data['Close'], self.f, self.s, self.p)
+    def next(self):
+        if not self.bought and self.macd[-1] < -0.0002 and self.macd[-1] > self.macd[-2] and self.macd[-1] > self.macd[-3]:
+            self.bought = not self.bought
+            self.buy()
+        elif self.bought and self.macd[-1] < 0.0001 and self.macd[-2] > 0.0001 and self.macd[-2] < self.macd[-3]:
+            self.bought = not self.bought
+            self.sell()
+
+
 print("Started...")
-bt = Backtest(datatmp, RSIIndicator, cash=10000, commission=.02)
+# bt = Backtest(datatmp, MACDI, cash=10000, commission=.0002)
+bt = Backtest(data_loc, MACDI, cash=10000, commission=.0002)
 result = bt.run()
 
 print(result)
-print("--->", buy_, sell_)
 
 print(np.isnan(result.SQN))

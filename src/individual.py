@@ -117,10 +117,10 @@ class BaseIndividual(BaseGaIndividualInterface):
 
     def _build_strategy(self, parameters):
         methods = {}
-        for klass in self._indicators_class:
+        for i, klass in enumerate(self._indicators_class):
             name = klass.__dict__.get('name')
-            methods['init__' + name] = klass.__dict__.get('init')
-            methods['next__' + name] = klass.__dict__.get('next')
+            methods['init__' + str(i) + name] = klass.__dict__.get('init')
+            methods['next__' + str(i) + name] = klass.__dict__.get('next')
             if parameters:
                 methods['params_' + name] = parameters.pop(0)
             else:

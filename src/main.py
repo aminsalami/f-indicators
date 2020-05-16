@@ -18,22 +18,23 @@ if __name__ == "__main__":
 
     # timeframes = ['5T', '10T', '20T', '30T', '1H', '2H', '3H', '4H']
     timeframes = ['1T', '3T', '5T', '30T']
+    timeframes = ['1T']
     print("[+] Prepairing time frames...")
     timeframed_data = CreateTimeFrames(data_slice, timeframes)
 
     # b = BacktestingGeneticAlgorithm(timeframed_data, 120, 100, 50, 20)
     b = BacktestingGeneticAlgorithm(
         timeframed_data,
-        population_size=65,
+        population_size=70,
         generations=20,
-        number_of_xover=30,
-        number_of_jesus=20,
-        thread_size=8
+        number_of_xover=20,
+        number_of_jesus=13,
+        thread_size=4
     )
 
     b.register(RSIIndicator)
     # b.register(SMAIndicator)
     b.register(MACDIndicator)
-    b.register(ADXIndicator)
+    # b.register(ADXIndicator)
 
     b.run()
