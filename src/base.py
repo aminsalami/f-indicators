@@ -45,6 +45,6 @@ class BaseStrategy(Strategy):
                     return
         if buy_or_not == 2:
             self.buy()
-        elif buy_or_not < -2:
+        elif buy_or_not == -2:
             self.sell()
 # ----------------------------------------------------------------------------
