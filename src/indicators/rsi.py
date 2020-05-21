@@ -17,12 +17,12 @@ class RSIParameter(object):
         NOTE: The `obj` has lower fitness
         """
         tmp = random.randint(1, 100)
-        if tmp > 70:
+        if tmp > 60:
             return obj
         return self
 
     def mutate(self):
-        return
+        self.price = random.choice(["Open", "Close", "Low", "High"])
 
     def get_params(self):
         return ("RSI", self.bottom, self.top, self.period_A, self.price)
