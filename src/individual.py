@@ -9,11 +9,11 @@ from base import BaseGaIndividualInterface, BaseStrategy
 from indicators.sma import SMAIndicator
 from utils import TFConvertor
 # ----------------------------------------------------------------------------
-log = logging.getLogger("Individual")
-log.setLevel(logging.DEBUG)
-path = Path(__file__).parent.resolve().parent
-path = path.joinpath("logs/ga__%s.log" % datetime.now().strftime('%Y-%m-%d--%H:%M:%S'))
-log.addHandler(logging.FileHandler(path.resolve()))
+# log = logging.getLogger("Individual")
+# log.setLevel(logging.DEBUG)
+# path = Path(__file__).parent.resolve().parent
+# path = path.joinpath("logs/ga__%s.log" % datetime.now().strftime('%Y-%m-%d--%H:%M:%S'))
+# log.addHandler(logging.FileHandler(path.resolve()))
 
 
 class BaseIndividual(BaseGaIndividualInterface):
@@ -71,7 +71,7 @@ class BaseIndividual(BaseGaIndividualInterface):
         ind.sample_data = random.choice([obj.sample_data, self.sample_data])
         # Recalculate the fitness
         ind.fitness
-        log.debug("XOver (%s, %s) --> %s" % (self.fitness, obj.fitness, ind.fitness))
+        # log.debug("XOver (%s, %s) --> %s" % (self.fitness, obj.fitness, ind.fitness))
         return ind
 
     def mutate(self):

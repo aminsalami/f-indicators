@@ -1,5 +1,5 @@
 # Genetic Algorithm implementation for backtesting lib
-import logging
+import logging, sys
 from datetime import datetime
 import random
 import time
@@ -10,11 +10,11 @@ from collections import Counter
 from individual import BaseIndividual
 from utils import DuplicateCounter
 
-log = logging.getLogger("GA")
-log.setLevel(logging.DEBUG)
-path = Path(__file__).parent.resolve().parent
-path = path.joinpath("logs/ga__%s.log" % datetime.now().strftime('%Y-%m-%d--%H:%M:%S'))
-log.addHandler(logging.FileHandler(path.resolve()))
+# log = logging.getLogger("GA")
+# log.setLevel(logging.DEBUG)
+# path = Path(__file__).parent.resolve().parent
+# path = path.joinpath("logs/ga__%s.log" % datetime.now().strftime('%Y-%m-%d--%H:%M:%S'))
+# log.addHandler(logging.FileHandler(path.resolve()))
 
 
 class BacktestingGeneticAlgorithm(object):
@@ -69,7 +69,7 @@ class BacktestingGeneticAlgorithm(object):
         fitness_vector = [i.fitness for i in self._population]
         # Select two random indexes based on fitness_values
         indx1, indx2 = self.roulette_wheel(fitness_vector)
-        log.debug("roulette_wheel selected: %s, %s" % (indx1, indx2))
+        # log.debug("roulette_wheel selected: %s, %s" % (indx1, indx2))
         ind1, ind2 = self._population[indx1], self._population[indx2]
         new_ind = ind1 + ind2   # xover two individuals
         new_ind.data = self._data
@@ -135,9 +135,11 @@ class BacktestingGeneticAlgorithm(object):
             t.join()
 
         print("\n[+] Population created successfully.\n")
+        print(sys.getsizeof(self._population))
+        print(sys.getsizeof(self._population[0]))
 
         for _ in range(self._generations):
-            log.info("\n--- New Generation ---\n")
+            # log.info("\n--- New Generation ---\n")
             # Add random individual
             self._add_jesus()
             # random Xover
@@ -152,8 +154,8 @@ class BacktestingGeneticAlgorithm(object):
             print("Fitness, TimeFrame, Trades#, AvgDuration: (%s, %s, %s, %s)" % \
                 (p0.fitness, p0.timeframe, p0.result.get("# Trades"), p0.result.get("Avg. Trade Duration"))
                 )
-            log.debug("Best individual result")
-            log.debug(p0.result)
+            # log.debug("Best individual result")
+            # log.debug(p0.result)
 
         log.info("Final mutation probability: %s" % self._mutation_probability)
         print("\n\n", self._population[0].result)
