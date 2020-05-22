@@ -22,14 +22,14 @@ class BaseIndividual(BaseGaIndividualInterface):
     def __init__(self, data, cash=10000, commission=0.0002, *args, **kwargs):
         self.original_data = data
         self.timeframe = random.choice(list(data.keys()))
-        self.sample_data = data[self.timeframe]
+        # self.sample_data = data[self.timeframe]
         self.commission = commission
         self.cash = cash
 
         self._indicators_class = []
         self.strategy_cls = None
 
-        self.result = None
+        self.result = ""
         self._fitness = None
         self.duplicate_number = 1
         self.delete_probability = None
@@ -68,7 +68,7 @@ class BaseIndividual(BaseGaIndividualInterface):
                 new_params.append(p2.xover(p1))
 
         ind.strategy_cls = ind._build_strategy(new_params.reverse())
-        ind.sample_data = random.choice([obj.sample_data, self.sample_data])
+        ind.timeframe = random.choice((self.timeframe, obj.timeframe))
         # Recalculate the fitness
         ind.fitness
         # log.debug("XOver (%s, %s) --> %s" % (self.fitness, obj.fitness, ind.fitness))
@@ -99,9 +99,10 @@ class BaseIndividual(BaseGaIndividualInterface):
         """
         Calculate fitness for each one of the strategies and return the result.
         """
-        bt = Backtest(self.sample_data, self.strategy_cls, cash=self.cash, commission=self.commission)
+        sample_data = self.original_data[self.timeframe]
+        bt = Backtest(sample_data, self.strategy_cls, cash=self.cash, commission=self.commission)
         result = bt.run()
-        self.result = result
+        self.result = self.minimize_result(result)
         if np.isnan(result.SQN):
             sqn = -70.0
         else:
@@ -138,3 +139,20 @@ class BaseIndividual(BaseGaIndividualInterface):
         TODO Maybe its a good solution to bound single functions to strategy_cls
         """
         self.strategy_cls = self._build_strategy(parameters=None)
+
+    def minimize_result(self, r):
+        mr = {}
+        mr["Start"] = r.Start
+        mr["End"] = r.End
+        mr["Duration"] = r.Duration
+        mr["Exposure [%]"] = r["Exposure [%]"]
+        mr["Equity Final [$]"] = r["Equity Final [$]"]
+        mr['Equity Peak [$]'] = r['Equity Peak [$]']
+        mr['Return [%]'] = r['Return [%]']
+        mr["# Trades"] = r["# Trades"]
+        mr["Win Rate [%]"] = r["Win Rate [%]"]
+        mr['Avg. Trade Duration'] = r['Avg. Trade Duration']
+        mr['Max. Trade Duration'] = r['Max. Trade Duration']
+        mr["SQN"] = r.SQN
+        mr["Total Seconds"] = r.get("Avg. Trade Duration").total_seconds()
+        return mr

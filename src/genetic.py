@@ -8,7 +8,7 @@ import numpy.random as npr
 from pathlib import Path
 from collections import Counter
 from individual import BaseIndividual
-from utils import DuplicateCounter
+from utils import DuplicateCounter, pretty_print
 
 # log = logging.getLogger("GA")
 # log.setLevel(logging.DEBUG)
@@ -91,8 +91,8 @@ class BacktestingGeneticAlgorithm(object):
         new_population = c.count()
         for ind in new_population:
             # Old delete_probability for positive max_fitness =  occurrence/population_len + 1-fitness/max(fitness)
-            t = ind.result.get("Avg. Trade Duration") # Average Trade Duration
-            atd = t.total_seconds() / 3600  # Average Trade Duration in Hour
+            # t = ind.result.get("Avg. Trade Duration") # Average Trade Duration
+            atd = ind.result.get("Total Seconds") / 3600  # Average Trade Duration in Hour
             ind.delete_probability = 5*ind.duplicate_number/len(new_population) - ind.fitness/atd
             # ind.delete_probability = 2*ind.duplicate_number/len(new_population) - ind.fitness
 
@@ -109,6 +109,8 @@ class BacktestingGeneticAlgorithm(object):
         # Normalize fitness values to [0, 1]
         maxi = max(vector)
         mini = min(vector)
+        if maxi - mini == 0:
+            return random.sample(range(0, len(vector)), 2)
         normalized = [(f - mini)/(maxi-mini) for f in vector]
 
         # Calculate selection probability
@@ -135,8 +137,6 @@ class BacktestingGeneticAlgorithm(object):
             t.join()
 
         print("\n[+] Population created successfully.\n")
-        print(sys.getsizeof(self._population))
-        print(sys.getsizeof(self._population[0]))
 
         for _ in range(self._generations):
             # log.info("\n--- New Generation ---\n")
@@ -157,7 +157,7 @@ class BacktestingGeneticAlgorithm(object):
             # log.debug("Best individual result")
             # log.debug(p0.result)
 
-        log.info("Final mutation probability: %s" % self._mutation_probability)
-        print("\n\n", self._population[0].result)
+        # log.info("Final mutation probability: %s" % self._mutation_probability)
+        pretty_print(self._population[0].result)
         print("\n\n", self._population[0].get_params())
         print("\nDone GA :)\n")
