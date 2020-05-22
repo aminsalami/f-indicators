@@ -29,3 +29,4 @@ typing-extensions==3.7.4.2
 urllib3==1.25.9
 ws4py==0.5.1
 Backtesting==0.1.7
+ipython==7.14.0
